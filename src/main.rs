@@ -13,12 +13,12 @@ fn main() -> Result<(), RequestError> {
         "dev",
         "admin",
         "admin",
-        "http://127.0.0.1:8069",
-        "res.users".to_string(),
+        "res.users",
+        "http://127.0.0.1:8069".to_string(),
     )?;
     println!("{}", odoo.browse(2));
-    // println!("{:?}", odoo.browse(2).get("name")?);
-    //
+    println!("{}", odoo.browse(2).get::<String>("name")?);
+
     // let partners = odoo
     //     .env("c.aws.accounts")
     //     .browse(1)
