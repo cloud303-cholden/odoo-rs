@@ -1,10 +1,10 @@
-use xmlrpc::{Error};
 use serde_xmlrpc::Value;
 use serde::Serialize;
+use reqwest::Error;
 
 use odoorpc::{Client, Data};
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 struct ResPartner<'a> {
     name: &'a str,
     email: &'a str,
@@ -26,16 +26,15 @@ fn main() -> Result<(), Error> {
         .get("c_aws_account_name")?;
     println!("{partners:?}");
 
+    let v = ResPartner {
+        name: "Rust 1",
+        email: "rust1@example.com",
+    };
+    println!("{v:?}");
+
     let partner = odoo
         .env("res.partner")
-        // .create(Data::from([
-        //     ("name".to_string(), Value::from("Rust 1")),
-        //     ("email".to_string(), Value::from("rust1@example.com")),
-        // ]).0)?;
-        .create2(serde_xmlrpc::to_value(ResPartner {
-            name: "Rust 1",
-            email: "rust1@example.com",
-        }).unwrap())?;
+        .create(v)?;
     println!("{partner}");
     let name = partner.get("name")?;
     println!("{name:?}");
