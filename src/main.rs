@@ -1,23 +1,24 @@
-use serde::Serialize;
+// use serde::Serialize;
 
-use odoorpc::{Client, RequestError};
+use odoorpc::Client;
 
-#[derive(Serialize, Debug)]
-struct ResPartner<'a> {
-    name: &'a str,
-    email: &'a str,
-}
+// #[derive(Serialize, Debug)]
+// struct ResPartner<'a> {
+//     name: &'a str,
+//     email: &'a str,
+// }
 
-fn main() -> Result<(), RequestError> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut odoo = Client::new(
-        "dev",
-        "admin",
-        "admin",
-        "res.users",
+        "dev".to_string(),
+        "admin".to_string(),
+        "admin".to_string(),
+        "res.users".to_string(),
         "http://127.0.0.1:8069".to_string(),
-    )?;
+    ).await?;
     println!("{}", odoo.browse(2));
-    println!("{}", odoo.browse(2).get::<String>("name")?);
+    println!("{}", odoo.browse(2).get("name").await?);
 
     // let partners = odoo
     //     .env("c.aws.accounts")
