@@ -12,17 +12,17 @@ struct ResPartner<'a> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut odoo = Client::new(
-        "dev".to_string(),
-        "admin".to_string(),
-        "admin".to_string(),
-        "res.users".to_string(),
-        "http://127.0.0.1:8069".to_string(),
+        "dev",
+        "admin",
+        "admin",
+        "res.users",
+        "http://127.0.0.1:8069",
     ).await?;
     println!("{}", odoo.browse(2));
     println!("{}", odoo.browse(2).get("name").await?);
 
     let account = odoo
-        .env("c.aws.accounts".to_string())
+        .env("c.aws.accounts")
         .browse(1)
         .get("c_aws_account_name")
         .await?;
@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     println!("{v:?}");
     let partner = odoo
-        .env("res.partner".to_string())
+        .env("res.partner")
         .create(serde_json::to_value(v)?)
         .await?;
     println!("{partner}");
