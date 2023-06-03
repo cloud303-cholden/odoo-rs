@@ -18,24 +18,31 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "res.users",
         "http://127.0.0.1:8069",
     ).await?;
-    println!("{}", odoo.browse(2));
-    println!("{}", odoo.browse(2).get("name").await?);
+    println!("{odoo}");
+    println!("{}", odoo.browse(1).get("name").await?);
 
-    let account = odoo
-        .env("c.aws.accounts")
+    let user = odoo
+        .env("res.users")
         .browse(1)
         .get("c_aws_account_name")
         .await?;
-    println!("{account:?}");
+    println!("{user:?}");
 
-    let v = ResPartner {
-        name: "Rust 2",
-        email: "rust2@example.com",
+    odoo.env("res.partner")
+        .create(json!({
+            "name": "Partner 1",
+            "email": "partner1@example.com",
+        }))
+        .await?;
+
+    let partner_data = ResPartner {
+        name: "Partner 2",
+        email: "partner2@example.com",
     };
-    println!("{v:?}");
+    println!("{partner_data:?}");
     let partner = odoo
         .env("res.partner")
-        .create(serde_json::to_value(v)?)
+        .create(serde_json::to_value(partner_data)?)
         .await?;
     println!("{partner}");
 
@@ -43,15 +50,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{name:?}");
 
     partner.write(json!({
-        "name": "Rust 6",
+        "name": "Partner 3",
     })).await?;
 
     odoo.search(json!([
-        ["name", '=', "Rust 6"],
+        ["name", '=', "Partner 3"],
     ])).await?;
-    println!("{}", odoo);
+    println!("{odoo}");
 
-    odoo.unlink().await?;
     odoo.unlink().await?;
 
     odoo.read(json!([
@@ -60,7 +66,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     odoo.search_read(
         json!([
-            ["name", "=", "Rust 2"],
+            ["name", "=", "Partner 2"],
         ]),
         json!([
             "name", "company_id", "email",
