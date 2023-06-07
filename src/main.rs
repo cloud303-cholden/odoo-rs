@@ -24,16 +24,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let user = odoo
         .env("res.users")
         .browse(1)
-        .get("c_aws_account_name")
+        .get("email")
         .await?;
     println!("{user:?}");
 
     odoo.env("res.partner")
-        .create(json!({
-            "name": "Partner 1",
-            "email": "partner1@example.com",
-        }))
+        .create(json!([
+            {
+                "name": "Partner A",
+                "email": "partnera@example.com",
+            },
+            {
+                "name": "Partner B",
+                "email": "partnerb@example.com",
+            },
+        ]))
         .await?;
+    println!("Recordset is multiple after create: {odoo}");
+    odoo.write(json!({
+        "name": "Partner X",
+    })).await?;
+    println!("Recordset is maintained after write: {odoo}");
 
     let partner_data = ResPartner {
         name: "Partner 2",
@@ -42,7 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{partner_data:?}");
     let partner = odoo
         .env("res.partner")
-        .create(serde_json::to_value(partner_data)?)
+        .create(serde_json::to_value(vec![partner_data])?)
         .await?;
     println!("{partner}");
 
